@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "probability-mass-confusion-matrix"
+version = "0.1.0"
+description = "Probability-mass confusion matrix and decisive/residual V-U decomposition"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy",
+]
+
+[project.optional-dependencies]
+experiments = [
+    "pandas",
+    "scipy",
+    "scikit-learn",
+    "matplotlib",
+    "openpyxl",
+    "imcp",
+]
+test = [
+    "pytest",
+]
+
+[tool.setuptools]
+py-modules = ["certainty_ratio"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
