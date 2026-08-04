@@ -31,8 +31,7 @@ The tie convention is deterministic: the first maximum in probability-column ord
 certainty_ratio.py                Core framework in one independent module
 reproduce_paper_experiments.py    Reproduction of the RF/MLR experiments
 example_basic.py                  Minimal example derived from the manuscript
-imcp.py.                          Package for Multiclass Classification Performance (MCP) curve.
-test_certainty_ratio.py           Numerical verification against the paper example
+imcp.py                           Package for Multiclass Classification Performance (MCP) curve.
 requirements.txt                  Runtime and test dependencies
 pyproject.toml                    Editable-install and pytest configuration
 /alldata                          Datasets used in the experiments
