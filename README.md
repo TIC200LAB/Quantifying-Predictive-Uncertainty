@@ -1,6 +1,6 @@
-# Probability-Mass Confusion Matrix and V/U Decomposition
+# Quantifying Predictive Uncertainty: A Probabilistic Framework for Classifier Evaluation
 
-This repository provides a compact reference implementation of the probability-mass evaluation framework described in the accompanying manuscript.
+This repository provides a compact reference implementation of the probability-mass evaluation framework described in the manuscript.
 
 The implementation starts from:
 
@@ -31,29 +31,12 @@ The tie convention is deterministic: the first maximum in probability-column ord
 certainty_ratio.py                Core framework in one independent module
 reproduce_paper_experiments.py    Reproduction of the RF/MLR experiments
 example_basic.py                  Minimal example derived from the manuscript
-tests/test_certainty_ratio.py     Numerical verification against the paper example
-data/README.md                    Dataset format and expected data placement
-GITHUB_UPLOAD_GUIDE_ES.md         Step-by-step GitHub instructions in Spanish
-CITATION.cff.template             Citation metadata template
+imcp.py.                          Package for Multiclass Classification Performance (MCP) curve.
+test_certainty_ratio.py           Numerical verification against the paper example
 requirements.txt                  Runtime and test dependencies
 pyproject.toml                    Editable-install and pytest configuration
-.gitignore                        Files that should not be committed
+/alldata                          Datasets used in the experiments
 ```
-
-## Installation
-
-Create and activate a clean environment, then install the repository:
-
-```bash
-python -m venv .venv
-source .venv/bin/activate          # macOS/Linux
-# .venv\Scripts\activate           # Windows PowerShell
-
-python -m pip install --upgrade pip
-python -m pip install -e .
-```
-
-For the full paper experiments, the `imcp` package must also be available because the reported tables include MCP.
 
 ## Minimal use
 
@@ -147,53 +130,6 @@ The script uses:
 - nested 3-fold isotonic calibration fitted exclusively on each outer training fold;
 - a deterministic first-maximum tie convention.
 
-It generates:
+## Citation 
 
-```text
-results/paper_tables.xlsx
-results/paper_results_RF_NOT_CALIBR.xlsx
-results/paper_results_RF_ISOT_CALIBR.xlsx
-results/paper_results_MLR_NOT_CALIBR.xlsx
-results/paper_results_MLR_ISOT_CALIBR.xlsx
-results/figure_5_rf_not_calibrated.png
-results/spearman_correlations.csv
-results/experiment_manifest.json
-```
-
-`paper_tables.xlsx` contains:
-
-- Table 2: uncalibrated RF;
-- Table 3: isotonic MLR;
-- Table 4: RF and MLR, with and without isotonic calibration;
-- all unrounded dataset-level results.
-
-### scikit-learn compatibility
-
-The historical experiment explicitly requests multinomial logistic regression. If the installed scikit-learn version no longer accepts `multi_class='multinomial'`, the script will stop rather than silently change the estimator semantics.
-
-For a non-historical compatibility run, use:
-
-```bash
-python reproduce_paper_experiments.py \
-    --data-dir alldata \
-    --output-dir results \
-    --use-current-logistic-default
-```
-
-This compatibility option may not reproduce historical numerical values exactly.
-
-## Reproducibility boundary
-
-The repository contains the computational implementation, but the UCI CSV files are not redistributed here. Exact numerical reproduction requires the same dataset versions, feature columns, class labels, software environment, and probability-generation settings used in the experiment.
-
-The generated `experiment_manifest.json` records the active environment and model configuration for each run.
-
-## Citation and licence
-
-Before making the repository public:
-
-1. replace this section with the final bibliographic citation of the article;
-2. add a licence selected by the repository owner;
-3. optionally archive a release and cite its permanent DOI in the manuscript.
-
-No licence has been selected automatically because the attached source material does not specify one.
+Quantifying Predictive Uncertainty: A Probabilistic Framework for Classifier Evaluation. 2026.
