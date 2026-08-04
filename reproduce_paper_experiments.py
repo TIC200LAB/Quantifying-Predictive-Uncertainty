@@ -383,9 +383,17 @@ def evaluate_dataset(path: Path, config: ExperimentConfig) -> list[DatasetResult
 
 
 def matrix_records(result: DatasetResult) -> list[dict[str, Any]]:
-    """Convert all framework matrices to a labelled long representation."""
+    """Convert the four aggregate framework matrices to long format.
+
+    Only ``CM``, ``CM_star``, ``V``, and ``U`` are written to the global Excel
+    workbooks.  The instance-level matrices ``T``, ``P``, ``Q``, ``Q_plus``,
+    and ``Q_minus`` can contain millions of cells across all datasets and may
+    exceed Excel's limit of 1,048,576 rows when converted to long format.
+    They remain available through ``result.evaluation`` during execution.
+    """
     records: list[dict[str, Any]] = []
-    for matrix_name, matrix in result.evaluation.matrix_summary().items():
+    for matrix_name in ("CM", "CM_star", "V", "U"):
+        matrix = getattr(result.evaluation, matrix_name)
         for row_index in range(matrix.shape[0]):
             for column_index in range(matrix.shape[1]):
                 records.append(
@@ -607,7 +615,7 @@ def write_outputs(
 def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
     """Parse command-line options."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--data-dir", type=Path, default=Path("alldata"))
+    parser.add_argument("--data-dir", type=Path, default=Path("../alldata"))
     parser.add_argument("--output-dir", type=Path, default=Path("results"))
     parser.add_argument("--class-column", default="class")
     parser.add_argument("--outer-folds", type=int, default=10)
