@@ -110,10 +110,6 @@ CM_star = [[2.3, 0.2, 0.5],
 
 ## Reproduce the paper experiments
 
-1. Place the 27 CSV files in `alldata/`.
-2. Ensure that each CSV contains numeric features and a target column named `class`.
-3. Run:
-
 ```bash
 python reproduce_paper_experiments.py \
     --data-dir alldata \
