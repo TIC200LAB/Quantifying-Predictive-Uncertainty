@@ -107,6 +107,160 @@ CM_star = [[2.3, 0.2, 0.5],
            [0.5, 1.1, 0.4],
            [0.0, 0.9, 0.1]]
 ```
+## Threshold-free decomposition of Q
+
+The matrix `Q` is decomposed row by row into:
+
+```text
+Q = Q_plus + Q_minus
+```
+
+### Decisive top-1 component
+
+`Q_plus` retains only the selected maximum probability in each row:
+
+```text
+Q_plus = [[0.9, 0.0, 0.0],
+          [0.8, 0.0, 0.0],
+          [0.6, 0.0, 0.0],
+          [0.4, 0.0, 0.0],
+          [0.0, 0.8, 0.0],
+          [0.0, 0.9, 0.0]]
+```
+
+This matrix contains the probability mass that determines the hard predictions.
+
+### Residual-dispersion component
+
+The remaining probability mass is:
+
+```text
+Q_minus = Q - Q_plus
+```
+
+giving:
+
+```text
+Q_minus = [[0.0, 0.1, 0.0],
+           [0.0, 0.0, 0.2],
+           [0.0, 0.1, 0.3],
+           [0.0, 0.3, 0.3],
+           [0.1, 0.0, 0.1],
+           [0.0, 0.0, 0.1]]
+```
+
+`Q_minus` describes how the probability mass not selected by the argmax decision is distributed across the remaining classes.
+
+No confidence threshold is required.
+
+---
+
+## Decomposition of the probability-mass confusion matrix
+
+Aggregating `Q_plus` and `Q_minus` by true class gives:
+
+```text
+V = T.T @ Q_plus
+U = T.T @ Q_minus
+```
+
+### Decisive probability-mass matrix
+
+```text
+V = [[2.3, 0.0, 0.0],
+     [0.4, 0.8, 0.0],
+     [0.0, 0.9, 0.0]]
+```
+
+The matrix `V` preserves the true-class/output-class allocation of top-1 probability mass.
+
+Its entries distinguish:
+
+- decisive mass supporting correct decisions, represented by diagonal entries;
+- decisive mass supporting errors, represented by off-diagonal entries.
+
+For example:
+
+- `V[A, A] = 2.3` supports correct top-1 decisions for class `A`;
+- `V[B, A] = 0.4` is top-1 probability mass supporting an incorrect prediction of `A` for a true-`B` instance;
+- `V[C, B] = 0.9` is top-1 probability mass supporting an incorrect prediction of `B` for the true-`C` instance.
+
+### Residual-dispersion matrix
+
+```text
+U = [[0.0, 0.2, 0.5],
+     [0.1, 0.3, 0.4],
+     [0.0, 0.0, 0.1]]
+```
+
+The matrix `U` preserves the allocation of residual probability mass.
+
+For example:
+
+- `U[A, C] = 0.5` is residual probability mass assigned to class `C` by true-`A` instances;
+- `U[B, C] = 0.4` is residual probability mass assigned to class `C` by true-`B` instances;
+- `U[B, B] = 0.3` is residual mass retained by the true class for a true-`B` instance whose top-1 prediction was another class;
+- `U[C, C] = 0.1` is residual mass assigned to the true class `C` when the top-1 prediction was `B`.
+
+Diagonal entries of `U` need not be zero. They arise when the true class receives some probability mass but is not the selected top-1 class.
+
+The decomposition is exact:
+
+```text
+CM_star = V + U
+```
+
+Numerically:
+
+```text
+CM_star = [[2.3, 0.2, 0.5],
+           [0.5, 1.1, 0.4],
+           [0.0, 0.9, 0.1]]
+
+V       = [[2.3, 0.0, 0.0],
+           [0.4, 0.8, 0.0],
+           [0.0, 0.9, 0.0]]
+
+U       = [[0.0, 0.2, 0.5],
+           [0.1, 0.3, 0.4],
+           [0.0, 0.0, 0.1]]
+```
+
+and:
+
+```text
+CM_star = V + U
+```
+
+This matrix-valued decomposition provides information that cannot be recovered from a scalar confidence or entropy summary alone. It identifies the true/output class pairs receiving decisive and residual probability mass.
+
+---
+
+## Global decisiveness and residual dispersion
+
+The total decisive probability mass is:
+
+```text
+sum(V) = 4.4
+```
+
+The total residual probability mass is:
+
+```text
+sum(U) = 1.6
+```
+
+Since the dataset contains six instances:
+
+```text
+lambda_v = sum(V) / 6
+         = 4.4 / 6
+         = 0.733333
+
+lambda_u = sum(U) / 6
+         = 1.6 / 6
+         = 0.266667
+```
 
 ## Reproduce the paper experiments
 
